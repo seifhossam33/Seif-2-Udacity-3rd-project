@@ -1,14 +1,30 @@
 ---
+- name: "update apt packages."
+  become: yes
+  apt:
+    update_cache: yes
 
-- name: "Install Node.js 13"
-  shell: |
-    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-    sudo apt-get install -y nodejs
+- name: "upgrade packages"
+  become: yes
+  apt:
+    upgrade: yes
 
-    sudo npm install -g n
-    sudo n 13.8.0
+- name: remove dependencies that are no longer required
+  become: yes
+  apt:
+    autoremove: yes
 
-- name: "Install PM2 Globally"
+- name: "install dependencies."
+  become: yes
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
+
+- name: "install pm2"
+  become: yes
   npm:
     name: pm2
     global: yes
+    production: yes
+    state: present
