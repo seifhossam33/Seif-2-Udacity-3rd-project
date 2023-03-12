@@ -231,9 +231,10 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
  		        then
- 			        # If you are using kvdb.io, generate the bucket ID "9GE4jRtKznmVKRfvdBABBe" in your local terminal first
  			        curl https://kvdb.io/p8jwoeyio1m7E6XaYmZqB/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
-     	      fi
+     	      else
+              echo "No migrations are pending"
+            fi
 
       - destroy-environment
       - revert-migrations
