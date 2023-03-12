@@ -22,8 +22,15 @@ commands:
               sudo add-apt-repository --yes --update ppa:ansible/ansible
               sudo apt install ansible -y
   
+  install_nodejs:
+    description: Install Node.js 13
+    steps:
+      - run:
+          name: Install Node.js 13
+          command: |
+            curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+            sudo apt install -y nodejs
 
-  
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
@@ -244,11 +251,11 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/base:stable
     steps:
       - checkout
       - install_awscli
-      #- install_nodejs
+      - install_nodejs
       - restore_cache:
           keys: [frontend-deps]
       - run:
@@ -276,12 +283,12 @@ jobs:
       # Here's where you will add some code to rollback on failure  
   deploy-backend:
       docker:
-        - image: cimg/node:13.8.0
+        - image: cimg/base:stable
       steps:
         - checkout
         - install_awscli
         - install_ansible
-        #- install_nodejs
+        - install_nodejs
         - add_ssh_keys:
             fingerprints: ["53:e9:d0:ba:15:6c:c3:85:a2:17:22:76:64:a4:be:d4"]
         - attach_workspace:
