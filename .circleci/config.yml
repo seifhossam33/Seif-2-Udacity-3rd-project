@@ -218,14 +218,17 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
+      - install_ansible
+      - install_awscli
       - restore_cache:
           keys: [backend-deps]
       - run:
           name: Run migrations
           command: |
             cd backend
-            npm install
+            sudo apt-get install npm
             npm run migrations > migrations_dump.txt
+            cat migrations_dump.txt
       - run:
           name: Send migration results to KVDB
           command: |
