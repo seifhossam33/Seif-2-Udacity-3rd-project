@@ -219,7 +219,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: [backend]
+          keys: [backend-deps]
       - run:
           name: Run migrations
           command: |
