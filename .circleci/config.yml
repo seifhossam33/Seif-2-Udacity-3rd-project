@@ -7,9 +7,7 @@ commands:
       - run:
           name: Install AWS CLI v2
           command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
+            python3 -m pip install --user ansible
 
   install_ansible:
     description: Install Ansible
@@ -135,7 +133,7 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/python:3.10
     steps:
       - checkout
       - install_awscli
@@ -172,6 +170,30 @@ jobs:
             - project/.circleci/ansible/inventory.txt
             
       - destroy-environment
+
+  configure-infrastructure:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["53:e9:d0:ba:15:6c:c3:85:a2:17:22:76:64:a4:be:d4"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            - install_ansible
+            - install_awscli
+      - run:
+          name: Configure server Ansible play
+          command: |
+            cd .circleci/ansible
+            cat inventory.txt
+            ansible-playbook -i inventory.txt configure-server.yml
+
+      - destroy-environment
+
 workflows:
   default:
     jobs:
@@ -190,3 +212,5 @@ workflows:
           filters:
             branches:
               only: [master]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure] 
