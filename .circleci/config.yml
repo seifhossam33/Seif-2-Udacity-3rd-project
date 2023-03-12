@@ -178,15 +178,12 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
+      - install_ansible
+      - install_awscli
       - add_ssh_keys:
           fingerprints: ["53:e9:d0:ba:15:6c:c3:85:a2:17:22:76:64:a4:be:d4"]
       - attach_workspace:
           at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            - install_ansible
-            - install_awscli
       - run:
           name: Configure server Ansible play
           command: |
